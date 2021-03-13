@@ -7,12 +7,14 @@
     <property name="value">3</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
+    <signal name="value-changed" handler="onBMax" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="adjust_birth_min">
     <property name="upper">8</property>
     <property name="value">3</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
+    <signal name="value-changed" handler="onBMin" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="adjust_height">
     <property name="lower">3</property>
@@ -40,12 +42,12 @@
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjust_speed">
-    <property name="lower">1</property>
-    <property name="upper">100</property>
-    <property name="value">10</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-    <property name="page_size">10</property>
+    <property name="lower">0.1</property>
+    <property name="upper">10</property>
+    <property name="value">1</property>
+    <property name="step_increment">0.1</property>
+    <property name="page_increment">1</property>
+    <property name="page_size">1</property>
   </object>
   <object class="GtkAdjustment" id="adjust_width">
     <property name="lower">3</property>
@@ -118,6 +120,7 @@
                     <property name="margin_end">4</property>
                     <property name="margin_top">4</property>
                     <property name="margin_bottom">4</property>
+                    <signal name="clicked" handler="onNew" object="lb_status" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -135,6 +138,7 @@
                     <property name="margin_end">4</property>
                     <property name="margin_top">4</property>
                     <property name="margin_bottom">4</property>
+                    <signal name="clicked" handler="onRand" object="lb_status" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -152,6 +156,7 @@
                     <property name="margin_end">4</property>
                     <property name="margin_top">4</property>
                     <property name="margin_bottom">4</property>
+                    <signal name="clicked" handler="onLoad" object="lb_status" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -169,6 +174,7 @@
                     <property name="margin_end">4</property>
                     <property name="margin_top">4</property>
                     <property name="margin_bottom">4</property>
+                    <signal name="clicked" handler="onSave" object="lb_status" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -186,6 +192,7 @@
                     <property name="margin_end">4</property>
                     <property name="margin_top">4</property>
                     <property name="margin_bottom">4</property>
+                    <signal name="clicked" handler="onNext" object="lb_status" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -203,6 +210,7 @@
                     <property name="margin_end">4</property>
                     <property name="margin_top">4</property>
                     <property name="margin_bottom">4</property>
+                    <signal name="toggled" handler="onToggleAuto" object="lb_status" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -211,18 +219,15 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScrollbar" id="scroll_speed">
+                  <object class="GtkScale">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_top">12</property>
-                    <property name="margin_bottom">12</property>
-                    <property name="hexpand">True</property>
+                    <property name="can_focus">True</property>
                     <property name="adjustment">adjust_speed</property>
-                    <property name="fill_level">100</property>
-                    <property name="round_digits">0</property>
+                    <property name="fill_level">10</property>
+                    <property name="round_digits">1</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
