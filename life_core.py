@@ -82,5 +82,8 @@ class LifeGrid:
                g[1:-1, 2:] + g[1:-1, 0:-2])
         return sum[1:-1, 1:-1]
 
-    def next_gen(self):
-        pass
+    def nextGen(self):
+        nbr = self.calcMoore()
+        keep_alive = (self.live_min <= nbr) & (nbr <= self.live_max)
+        give_birth = (self.birth_min <= nbr) & (nbr <= self.birth_max)
+        self._grid[2:-2, 2:-2] = (keep_alive & self.grid) | give_birth

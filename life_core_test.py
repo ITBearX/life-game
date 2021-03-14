@@ -14,3 +14,6 @@ print("Resized it:\n", life)
 
 print("Moore neighbourhood:\n", life.calcMoore())
 print("von Neumann neighbourhood:\n", life.calcVonNeumann())
+
+life.nextGen()
+print("New generation:\n", life)
