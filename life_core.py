@@ -7,7 +7,7 @@ class LifeGrid:
         self.zeros(size)
         (self.live_min, self.live_max) = (2, 3)
         (self.birth_min, self.birth_max) = (2, 2)
-        self.percent_rand = 0.5
+        self.percent_rand = 0.2
 
     def __getattr__(self, attr):
         if attr == 'grid':
@@ -58,13 +58,14 @@ class LifeGrid:
             self._grid = new_grid
 
     def animateCell(self, key):
-        self._grid[self.convertKey(key)] = 1
+        self._grid[self._convertKey(key)] = 1
 
     def killCell(self, key):
-        self._grid[self.convertKey(key)] = 0
+        self._grid[self._convertKey(key)] = 0
 
     def getCellState(self, key):
-        if self_grid[self.convertKey(key)] > 0:
+        key = self._convertKey(key)
+        if self._grid[key] > 0:
             return True
         else:
             return False
