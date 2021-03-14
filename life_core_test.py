@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import life_core
+from life_core import LifeGrid
 
 life = LifeGrid((5, 5))
 print("Created an empty one:\n", life)
