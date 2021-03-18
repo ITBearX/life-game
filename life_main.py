@@ -15,30 +15,30 @@ class Handler:
 
     def onNew(self, status):
         life.zeros()
-        status.set_text("Started a new grid")
+        status.set_text('Started a new grid')
 
     def onRand(self, status):
         life.rand()
-        status.set_text("Created a random grid")
+        status.set_text('Created a random grid')
 
     def onLoad(self, status):
-        status.set_text("Unimplemented yet...")
+        status.set_text('Unimplemented yet...')
 
     def onSave(self, status):
-        status.set_text("Unimplemented yet...")
+        status.set_text('Unimplemented yet...')
 
     def onNext(self, status):
         life.next_gen()
-        status.set_text("Next generation")
+        status.set_text('Next generation')
 
     def onToggleAuto(self, status):
         tb = builder.get_object('toggleAuto')
         if tb.get_active():
             t = time.Timer(1.0, autoplay)
             t.start()
-            status.set_text("Auto playing")
+            status.set_text('Auto playing')
         else:
-            status.set_text("Stopped")
+            status.set_text('Stopped')
 
     def onDraw(self, area, context):
         width = area.get_allocated_width()
@@ -47,7 +47,7 @@ class Handler:
 
     def onGridClick(self, drawing_area, event):
         status = builder.get_object('lb_status')
-        status.set_text("Mouse clicked... at {},{}".format(event.x, event.y))
+        status.set_text('Mouse clicked... at {},{}'.format(event.x, event.y))
 #        drawing_area.queue_draw()
 
     def onRulesChange(self, *args):
@@ -65,17 +65,19 @@ class Handler:
         Gtk.main_quit()
 
 
-life = LifeGridCairo()
-life.rand()
+if __name__ == '__main__':
 
-# Handle pressing Ctr+C properly, ignored by default
-signal.signal(signal.SIGINT, signal.SIG_DFL)
+    life = LifeGridCairo()
+    life.rand()
 
-builder = Gtk.Builder()
-builder.add_from_file('life-game.glade')
-builder.connect_signals(Handler())
+    # Handle pressing Ctr+C properly, ignored by default
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-window = builder.get_object('window_main')
-window.show_all()
+    builder = Gtk.Builder()
+    builder.add_from_file('life_main.glade')
+    builder.connect_signals(Handler())
 
-Gtk.main()
+    window = builder.get_object('window_main')
+    window.show_all()
+
+    Gtk.main()
