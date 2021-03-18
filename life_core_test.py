@@ -1,19 +1,23 @@
 #!/usr/bin/python
 
-import life_core
 from life_core import LifeGrid
 
-life = LifeGrid((5, 5))
+life = LifeGrid(5, 5)
 print("Created an empty one:\n", life)
 
 life.rand()
 print("Filled it with random values:\n", life)
 
-life.resize((8, 3))
+life.resize(8, 3)
 print("Resized it:\n", life)
 
-print("Moore neighbourhood:\n", life.calcMoore())
-print("von Neumann neighbourhood:\n", life.calcVonNeumann())
+print("Cell 1,2:", life[1, 2])
+life[1, 2] = not life[1, 2]
+print("Cell 1,2 after flip:", life[1, 2])
+print(life)
 
-life.nextGen()
+print("Neighbourhood type:", life.nbr_func.__name__)
+print("Neighbourhood:\n", life.nbr_func())
+
+life.next_gen()
 print("New generation:\n", life)

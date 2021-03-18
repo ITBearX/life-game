@@ -3,88 +3,91 @@ import numpy as np
 
 class LifeGrid:
 
-    def __init__(self, size=(16, 16)):
-        self.zeros(size)
-        (self.live_min, self.live_max) = (2, 3)
-        (self.birth_min, self.birth_max) = (2, 2)
-        self.percent_rand = 0.2
+    def __init__(self, rows=16, cols=16):
+        self.zeros(rows, cols)
+        self.nbr_func = self.moore_nbr
+        (self.alive_nbr_min, self.alive_nbr_max) = (2, 3)
+        (self.birth_nbr_min, self.birth_nbr_max) = (3, 3)
+        self.rand_alive_perc = 0.5
 
     def __getattr__(self, attr):
         if attr == 'grid':
             return self._grid[2:-2, 2:-2]
         elif attr == 'size' or attr == 'shape':
             return (self._grid.shape[0]-4, self._grid.shape[1]-4)
+        elif attr == 'rows' or attr == 'height':
+            return self._grid.shape[0]-4
+        elif attr == 'cols' or attr == 'width':
+            return self._grid.shape[1]-4
         else:
             raise AttributeError
 
     def __getitem__(self, key):
-        pass
+        if self._grid[self._np_key(key)] > 0:
+            return True
+        return False
+
+    def __setitem__(self, key, value):
+        if value > 0:
+            self._grid[self._np_key(key)] = 1
+        else:
+            self._grid[self._np_key(key)] = 0
 
     def __str__(self):
         return str(self.grid)
 
-    def _convertSize(self, size):
-        if size[0] <= 0:
-            height = self._grid.shape[0]
+    def _np_size(self, rows, cols):
+        if rows <= 0:
+            rows = self._grid.shape[0]
         else:
-            height = size[0] + 4
-        if size[1] <= 0:
-            width = self._grid.shape[1]
+            rows += 4
+        if cols <= 0:
+            cols = self._grid.shape[1]
         else:
-            width = size[1] + 4
-        return (height, width)
+            cols += 4
+        return (rows, cols)
 
-    def _convertKey(self, key):
+    def _np_key(self, key):
         return (key[0]+2, key[1]+2)
 
-    def zeros(self, size=(-1, -1)):
-        self._grid = np.zeros(self._convertSize(size), dtype=int)
+    def zeros(self, rows=-1, cols=-1):
+        self._grid = np.zeros(self._np_size(rows, cols), dtype=int)
 
-    def rand(self, size=(-1, -1)):
-        self.resize(size)
-        prob = np.random.rand(self.size[0], self.size[1])
-        fprob = np.vectorize(lambda x: 1 if x < self.percent_rand else 0)
+    def rand(self, rows=-1, cols=-1, alive_perc=-1):
+        self.resize(rows, cols, False)
+        if alive_perc != -1:
+            self.rand_alive_perc = alive_perc
+        prob = np.random.rand(self.rows, self.cols)
+        fprob = np.vectorize(lambda x: 1 if x < self.rand_alive_perc else 0)
         new_data = fprob(prob)
         self._grid[2:-2, 2:-2] = new_data.copy()
 
-    def resize(self, size):
-        new_size = self._convertSize(size)
+    def resize(self, rows=-1, cols=-1, keep_data=True):
+        new_size = self._np_size(rows, cols)
         if new_size != self._grid.shape:
             new_grid = np.zeros(new_size, dtype=int)
-            cp_height = min((new_size[0]-2, self._grid.shape[0]-2))
-            cp_width = min((new_size[1]-2, self._grid.shape[1]-2))
-            old_data = self._grid[2:cp_height, 2:cp_width]
-            new_grid[2:cp_height, 2:cp_width] = old_data.copy()
+            if keep_data:
+                cp_rows = min((new_size[0]-2, self._grid.shape[0]-2))
+                cp_cols = min((new_size[1]-2, self._grid.shape[1]-2))
+                old_data = self._grid[2:cp_rows, 2:cp_cols]
+                new_grid[2:cp_rows, 2:cp_cols] = old_data.copy()
             self._grid = new_grid
 
-    def animateCell(self, key):
-        self._grid[self._convertKey(key)] = 1
-
-    def killCell(self, key):
-        self._grid[self._convertKey(key)] = 0
-
-    def getCellState(self, key):
-        key = self._convertKey(key)
-        if self._grid[key] > 0:
-            return True
-        else:
-            return False
-
-    def calcMoore(self):
+    def moore_nbr(self):
         g = self._grid
-        sum = (g[2:, 2:]   + g[2:, 1:-1]   + g[2:, 0:-2] +
-               g[0:-2, 2:] + g[0:-2, 1:-1] + g[0:-2, 0:-2] +
-               g[1:-1, 2:] + g[1:-1, 0:-2])
-        return sum[1:-1, 1:-1]
+        s = (g[2:, 2:] + g[2:, 1:-1] + g[2:, 0:-2] +
+             g[0:-2, 2:] + g[0:-2, 1:-1] + g[0:-2, 0:-2] +
+             g[1:-1, 2:] + g[1:-1, 0:-2])
+        return s[1:-1, 1:-1]
 
-    def calcVonNeumann(self):
+    def von_neumann_nbr(self):
         g = self._grid
-        sum = (g[2:, 1:-1] + g[0:-2, 1:-1] +
-               g[1:-1, 2:] + g[1:-1, 0:-2])
-        return sum[1:-1, 1:-1]
+        s = (g[2:, 1:-1] + g[0:-2, 1:-1] +
+             g[1:-1, 2:] + g[1:-1, 0:-2])
+        return s[1:-1, 1:-1]
 
-    def nextGen(self):
-        nbr = self.calcMoore()
-        keep_alive = (self.live_min <= nbr) & (nbr <= self.live_max)
-        give_birth = (self.birth_min <= nbr) & (nbr <= self.birth_max)
+    def next_gen(self):
+        nbr = self.nbr_func()
+        keep_alive = (self.alive_nbr_min <= nbr) & (nbr <= self.alive_nbr_max)
+        give_birth = (self.birth_nbr_min <= nbr) & (nbr <= self.birth_nbr_max)
         self._grid[2:-2, 2:-2] = (keep_alive & self.grid) | give_birth

@@ -7,14 +7,14 @@
     <property name="value">3</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
-    <signal name="value-changed" handler="onBMax" swapped="no"/>
+    <signal name="value-changed" handler="onRulesChange" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="adjust_birth_min">
     <property name="upper">8</property>
     <property name="value">3</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
-    <signal name="value-changed" handler="onBMin" swapped="no"/>
+    <signal name="value-changed" handler="onRulesChange" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="adjust_height">
     <property name="lower">3</property>
@@ -22,24 +22,28 @@
     <property name="value">16</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+    <signal name="value-changed" handler="onShapeChange" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="adjust_live_max">
     <property name="upper">8</property>
     <property name="value">3</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
+    <signal name="value-changed" handler="onRulesChange" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="adjust_live_min">
     <property name="upper">8</property>
     <property name="value">2</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
+    <signal name="value-changed" handler="onRulesChange" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="adjust_percent">
     <property name="upper">100</property>
     <property name="value">25</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+    <signal name="value-changed" handler="onPercChange" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="adjust_speed">
     <property name="lower">0.1</property>
@@ -55,6 +59,7 @@
     <property name="value">16</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+    <signal name="value-changed" handler="onShapeChange" swapped="no"/>
   </object>
   <object class="GtkWindow" id="window_main">
     <property name="can_focus">False</property>
@@ -94,11 +99,14 @@
             <child>
               <object class="GtkDrawingArea" id="drawing">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_start">4</property>
-                <property name="margin_end">4</property>
-                <property name="margin_top">4</property>
-                <property name="margin_bottom">4</property>
+                <property name="can_focus">True</property>
+                <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+                <property name="margin_start">10</property>
+                <property name="margin_end">10</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
+                <signal name="button-press-event" handler="onGridClick" swapped="no"/>
+                <signal name="draw" handler="onDraw" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
