@@ -3,12 +3,16 @@ import numpy as np
 
 class LifeGrid:
 
-    def __init__(self, rows=16, cols=16):
+    def __init__(self, rows=16, cols=16, h_wrap=False, v_wrap=False,
+                 alive_nbr_min=2, alive_nbr_max=3,
+                 birth_nbr_min=3, birth_nbr_max=3):
         self.zeros(rows, cols)
         self.nbr_func = self.moore_nbr
-        (self.alive_nbr_min, self.alive_nbr_max) = (2, 3)
-        (self.birth_nbr_min, self.birth_nbr_max) = (3, 3)
-        self.rand_alive_perc = 0.5
+        (self.h_wrap, self.v_wrap) = (h_wrap, v_wrap)
+        (self.alive_nbr_min, self.alive_nbr_max) = (alive_nbr_min,
+                                                    alive_nbr_max)
+        (self.birth_nbr_min, self.birth_nbr_max) = (birth_nbr_min,
+                                                    birth_nbr_max)
 
     def __getattr__(self, attr):
         if attr == 'grid':
@@ -50,15 +54,30 @@ class LifeGrid:
     def _np_key(self, key):
         return (key[0]+2, key[1]+2)
 
+    def _wrap_append(self):
+        wrap_table = [2, 3, -4, -3]
+        if self.v_wrap:
+            for (i, j) in enumerate(wrap_table, start=-2):
+                self._grid[i, :] = self._grid[j, :]
+        else:
+            for i in range(-2, 2):
+                self._grid[i, :] = np.zeros((self._grid.shape[1]),
+                                            dtype=int)
+        if self.h_wrap:
+            for (i, j) in enumerate(wrap_table, start=-2):
+                self._grid[:, i] = self._grid[:, j]
+        else:
+            for i in range(-2, 2):
+                self._grid[:, i] = np.zeros((self._grid.shape[0]),
+                                            dtype=int)
+
     def zeros(self, rows=-1, cols=-1):
         self._grid = np.zeros(self._np_size(rows, cols), dtype=int)
 
-    def rand(self, rows=-1, cols=-1, alive_perc=-1):
+    def rand(self, alive_perc=0.5, rows=-1, cols=-1):
         self.resize(rows, cols, False)
-        if alive_perc != -1:
-            self.rand_alive_perc = alive_perc
         prob = np.random.rand(self.rows, self.cols)
-        fprob = np.vectorize(lambda x: 1 if x < self.rand_alive_perc else 0)
+        fprob = np.vectorize(lambda x: 1 if x < alive_perc else 0)
         new_data = fprob(prob)
         self._grid[2:-2, 2:-2] = new_data.copy()
 
@@ -87,6 +106,7 @@ class LifeGrid:
         return s[1:-1, 1:-1]
 
     def next_gen(self):
+        self._wrap_append()
         nbr = self.nbr_func()
         keep_alive = (self.alive_nbr_min <= nbr) & (nbr <= self.alive_nbr_max)
         give_birth = (self.birth_nbr_min <= nbr) & (nbr <= self.birth_nbr_max)
