@@ -2,17 +2,18 @@ from life_core import LifeGrid
 
 
 class LifeGridCairo(LifeGrid):
+    '''LifeGrid with Cairo output'''
 
     def _set_scale(self, cr, width, height):
         shape_ratio = self.rows / self.cols
         box_ratio = height / width
 
         if shape_ratio > box_ratio:
-            scale = height / self.rows
+            self.scale = height / self.rows
         else:
-            scale = width / self.cols
+            self.scale = width / self.cols
         cr.translate(0, 0)
-        cr.scale(scale, scale)
+        cr.scale(self.scale, self.scale)
 
     def draw(self, cr, width, height):
         self._set_scale(cr, width, height)
@@ -27,5 +28,11 @@ class LifeGridCairo(LifeGrid):
             for col in range(self.cols):
                 if self[row, col]:
                     cr.set_source_rgb(0.0, 1.0, 0.0)
-                    cr.rectangle(col+0.1, row+0.1, 0.8, 0.8)
+                    cr.rectangle(col + 0.1, row + 0.1, 0.8, 0.8)
                     cr.fill()
+
+    def flip_on_click(self, x, y):
+        row = int(y / self.scale)
+        col = int(x / self.scale)
+        if 0 <= row <= self.rows and 0 <= col <= self.cols:
+            self[row, col] = not self[row, col]
