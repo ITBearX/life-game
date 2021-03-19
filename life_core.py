@@ -91,6 +91,8 @@ class LifeGrid:
                 old_data = self._grid[2:cp_rows, 2:cp_cols]
                 new_grid[2:cp_rows, 2:cp_cols] = old_data.copy()
             self._grid = new_grid
+            return True
+        return False
 
     def moore_nbr(self):
         g = self._grid

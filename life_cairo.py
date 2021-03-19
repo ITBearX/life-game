@@ -36,3 +36,4 @@ class LifeGridCairo(LifeGrid):
         col = int(x / self.scale)
         if 0 <= row <= self.rows and 0 <= col <= self.cols:
             self[row, col] = not self[row, col]
+            return (row, col, self[row, col])

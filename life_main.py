@@ -43,9 +43,10 @@ class Handler:
         life.draw(context, width, height)
 
     def onGridClick(self, area, event):
-        life.flip_on_click(event.x, event.y)
-        status.set_text('Mouse clicked... at {},{}'.format(event.x, event.y))
-        drawing_area.queue_draw()
+        flip_result = life.flip_on_click(event.x, event.y)
+        if flip_result is not None:
+            self.update_drawing('Cell {},{} flipped'.format(flip_result[0],
+                                                            flip_result[1]))
 
     def onShapeChange(self, *args):
         rows = controls['rows'].get_value()
