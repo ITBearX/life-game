@@ -133,7 +133,7 @@
                     <property name="margin_end">4</property>
                     <property name="margin_top">4</property>
                     <property name="margin_bottom">4</property>
-                    <signal name="clicked" handler="onNext" object="lb_status" swapped="no"/>
+                    <signal name="clicked" handler="onPlay" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -142,7 +142,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToggleButton" id="toggleAuto">
+                  <object class="GtkToggleButton" id="bt_auto">
                     <property name="label" translatable="yes">Auto</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -151,7 +151,7 @@
                     <property name="margin_end">4</property>
                     <property name="margin_top">4</property>
                     <property name="margin_bottom">4</property>
-                    <signal name="toggled" handler="onToggleAuto" object="lb_status" swapped="no"/>
+                    <signal name="toggled" handler="onPlay" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -174,7 +174,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScale" id="ctr_speed">
+                  <object class="GtkScale" id="scale_speed">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
