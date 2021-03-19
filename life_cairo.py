@@ -17,10 +17,10 @@ class LifeGridCairo(LifeGrid):
 
     def draw(self, cr, width, height):
         self._set_scale(cr, width, height)
-        cr.set_line_width(0.02)
+        cr.set_line_width(2/self.scale)
 
         cr.set_source_rgb(0.0, 0.5, 1.0)
-        cr.rectangle(0, 0, self.cols, self.rows)
+        cr.rectangle(0.05, 0.05, self.cols-0.1, self.rows-0.1)
         cr.stroke()
 
         cr.set_line_width(0.01)
