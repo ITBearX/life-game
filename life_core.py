@@ -92,9 +92,9 @@ class LifeGrid:
     def load(self, f_name):
         with open(f_name, 'rb') as f:
             ld_data = np.load(f)
-            logging.error(f'Loaded shape:{ld_data.shape[0]},{ld_data.shape[1]}')
+            logging.info(f'Loaded shape:{ld_data.shape[0]},{ld_data.shape[1]}')
             self.resize(ld_data.shape[0], ld_data.shape[1])
-            logging.error(f'Resized shape:{self.rows},{self.cols}')
+            logging.info(f'Resized shape:{self.rows},{self.cols}')
             self._grid[2:-2, 2:-2] = ld_data.copy()
 
     def save(self, f_name):
