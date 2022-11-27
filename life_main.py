@@ -4,6 +4,7 @@ import signal
 import time
 from threading import Timer
 import gi
+
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
@@ -11,6 +12,11 @@ from life_cairo import LifeGridCairo
 
 
 class Handler:
+
+    def onDraw(self, area, context):
+        width = area.get_allocated_width()
+        height = area.get_allocated_height()
+        life.draw(context, width, height)
 
     def onNew(self, *args):
         life.zeros()
@@ -21,18 +27,23 @@ class Handler:
         update_drawing('Created a random grid')
 
     def onLoad(self, *args):
-        status.set_text('Unimplemented yet...')
+        f_name = pick_file('Load from file')
+        if f_name is not None:
+            life.load(f_name)
+            controls['rows'].set_value(life.rows)
+            controls['cols'].set_value(life.cols)
+            update_drawing('Loaded from file: {} New size: {},{}'.format(
+                f_name, life.rows, life.cols)
+            )
 
     def onSave(self, *args):
-        status.set_text('Unimplemented yet...')
+        f_name = pick_file('Save to file', save=True)
+        if f_name is not None:
+            life.save(f_name)
+            update_drawing('Saved to file: ' + f_name)
 
     def onPlay(self, *args):
         play()
-
-    def onDraw(self, area, context):
-        width = area.get_allocated_width()
-        height = area.get_allocated_height()
-        life.draw(context, width, height)
 
     def onGridClick(self, area, event):
         flip_result = life.flip_on_click(event.x, event.y)
@@ -78,6 +89,11 @@ class Handler:
         Gtk.main_quit()
 
 
+def update_drawing(msg=''):
+    status.set_text(msg)
+    drawing_area.queue_draw()
+
+
 def play():
     life.next_gen()
     drawing_area.queue_draw()
@@ -90,9 +106,28 @@ def play():
         status.set_text('Idle')
 
 
-def update_drawing(msg=''):
-    status.set_text(msg)
-    drawing_area.queue_draw()
+def pick_file(title, save=False):
+    if save:
+        action = Gtk.FileChooserAction.SAVE
+        btn = Gtk.STOCK_SAVE
+    else:
+        action = Gtk.FileChooserAction.OPEN
+        btn = Gtk.STOCK_OPEN
+
+    dialog = Gtk.FileChooserDialog(
+        title=title, parent=window, action=action
+    )
+    dialog.add_buttons(
+        Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+        btn, Gtk.ResponseType.OK,
+    )
+
+    f_name = None
+    if dialog.run() == Gtk.ResponseType.OK:
+        f_name = dialog.get_filename()
+
+    dialog.destroy()
+    return f_name
 
 
 if __name__ == '__main__':

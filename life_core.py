@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 
 
@@ -8,23 +9,20 @@ class LifeGrid:
                  birth_nbr_min=3, birth_nbr_max=3):
         self.zeros(rows, cols)
         self.nbr_func = self.moore_nbr
-        (self.h_wrap, self.v_wrap) = (h_wrap, v_wrap)
-        (self.alive_nbr_min, self.alive_nbr_max) = (alive_nbr_min,
-                                                    alive_nbr_max)
-        (self.birth_nbr_min, self.birth_nbr_max) = (birth_nbr_min,
-                                                    birth_nbr_max)
+        self.h_wrap, self.v_wrap = h_wrap, v_wrap
+        self.alive_nbr_min, self.alive_nbr_max = alive_nbr_min, alive_nbr_max
+        self.birth_nbr_min, self.birth_nbr_max = birth_nbr_min, birth_nbr_max
 
     def __getattr__(self, attr):
         if attr == 'grid':
             return self._grid[2:-2, 2:-2]
-        elif attr == 'size' or attr == 'shape':
-            return (self._grid.shape[0]-4, self._grid.shape[1]-4)
-        elif attr == 'rows' or attr == 'height':
-            return self._grid.shape[0]-4
-        elif attr == 'cols' or attr == 'width':
-            return self._grid.shape[1]-4
-        else:
-            raise AttributeError
+        elif attr in ('size', 'shape'):
+            return (self._grid.shape[0] - 4, self._grid.shape[1] - 4)
+        elif attr in ('rows', 'height'):
+            return self._grid.shape[0] - 4
+        elif attr in ('cols', 'width'):
+            return self._grid.shape[1] - 4
+        raise AttributeError
 
     def __getitem__(self, key):
         if self._grid[self._np_key(key)] > 0:
@@ -34,13 +32,13 @@ class LifeGrid:
     def __setitem__(self, key, value):
         if value > 0:
             self._grid[self._np_key(key)] = 1
-        else:
-            self._grid[self._np_key(key)] = 0
+        self._grid[self._np_key(key)] = 0
 
     def __str__(self):
         return str(self.grid)
 
     def _np_size(self, rows, cols):
+        '''Returns the grid actual size with helper rows/cols'''
         if rows <= 0:
             rows = self._grid.shape[0]
         else:
@@ -55,6 +53,8 @@ class LifeGrid:
         return (key[0]+2, key[1]+2)
 
     def _wrap_append(self):
+        '''Fills helper extra rows/cols if the grid is wrapped'''
+
         wrap_table = [2, 3, -4, -3]
         if self.v_wrap:
             for (i, j) in enumerate(wrap_table, start=-2):
@@ -113,3 +113,23 @@ class LifeGrid:
         keep_alive = (self.alive_nbr_min <= nbr) & (nbr <= self.alive_nbr_max)
         give_birth = (self.birth_nbr_min <= nbr) & (nbr <= self.birth_nbr_max)
         self._grid[2:-2, 2:-2] = (keep_alive & self.grid) | give_birth
+
+    def load(self, f_name):
+        with open(f_name, 'rb') as f:
+            ld_data = np.load(f)
+            logging.error(
+                'Loaded shape:{},{}'.format(
+                    ld_data.shape[0], ld_data.shape[1]
+                )
+            )
+            self.resize(ld_data.shape[0], ld_data.shape[1])
+            logging.error(
+                'Resized shape:{},{}'.format(
+                    self.rows, self.cols
+                )
+            )
+            self._grid[2:-2, 2:-2] = ld_data.copy()
+
+    def save(self, f_name):
+        with open(f_name, 'wb') as f:
+            np.save(f, self.grid)
